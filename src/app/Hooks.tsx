@@ -1,5 +1,5 @@
 "use client"
-import subway from "../../assets/subwayStations.json"
+import subway from "./assets/subwayStations.json"
 import { LineLayer, ScatterplotLayer } from "deck.gl";
 import type { Color, Station, Line } from "@/types";
 import { useStationStore } from "@/store";
