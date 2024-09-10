@@ -5,6 +5,39 @@ export type Station = {
   lng: number
 }
 export type Line = {
-  sourcePosition: [number, number],
-  targetPosition: [number, number]
+  sourcePosition: [longitude: number, latitude: number],
+  targetPosition: [longitude: number, latitude: number]
+}
+export type SubwayList = {
+  beginRow: never,
+  endRow: never,
+  curPage: never,
+  pageRow: never,
+  totalCount: number,
+  rowNum: number,
+  selectedCount: number,
+  subwayId: string,
+  subwayNm: never,
+  updnLine: string,
+  trainLineNm: string,
+  subwayHeading: never,
+  statnFid: string,
+  statnTid: string,
+  statnId: string,
+  statnNm: string,
+  trainCo: never,
+  trnsitCo: string,
+  ordkey: string,
+  subwayList: string,
+  statnList: string,
+  btrainSttus: string,
+  barvlDt: string,
+  btrainNo: string,
+  bstatnId: string,
+  bstatnNm: string,
+  recptnDt: string,
+  arvlMsg2: string,
+  arvlMsg3: string,
+  arvlCd: string,
+  lstcarAt: string
 }

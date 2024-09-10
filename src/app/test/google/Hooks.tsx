@@ -2,6 +2,7 @@
 import subway from "../../assets/subwayStations.json"
 import { LineLayer, ScatterplotLayer } from "deck.gl";
 import type { Color, Station, Line } from "@/types";
+import { useStationStore } from "@/store";
 
 /**
  * 노선을 간단하게 그리기 위한 훅
@@ -38,7 +39,8 @@ export const useLine = (lineNum: string[], color: Color): LineLayer => {
  * @param lineNum 데이터 호선의 이름
  * @returns ScatterplotLayer 반환
  */
-export const useMarker = (lineNum: string[]) => {
+export const useMarker = (lineNum: string[], color: Color) => {
+  const { station, setStation } = useStationStore();
   const line = subway.DATA.filter((item) => lineNum.some((num) => item.route.startsWith(num)));
   const lineData = line.map((item) => ({
     name: item.bldn_nm,
@@ -46,20 +48,22 @@ export const useMarker = (lineNum: string[]) => {
     lng: parseFloat(item.lot),
   } as Station));
 
-  const scatterplotLayer = new ScatterplotLayer({
+  const scatterplotLayer = new ScatterplotLayer<Station>({
     id: `${lineNum}-stations`,
     data: lineData,
     getPosition: (d: Station) => [d.lng, d.lat],
     // getRadius: 25, // Radius in meters
     getFillColor: [255, 255, 255, 255],
-    getLineColor: [0, 0, 0, 255],
+    getLineColor: [color[0], color[1], color[2], color[3] || 255],
     pickable: true,
+    stroked: true,
     radiusMinPixels: 7,
     radiusMaxPixels: 25,
-    lineWidthMinPixels: 2,
+    lineWidthMinPixels: 3,
+    lineWidthMaxPixels: 10,
     onClick: (pickingInfo, event) => {
       const { name } = pickingInfo.object
-      alert(name);
+      setStation(name);
     },
   });
 

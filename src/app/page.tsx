@@ -4,13 +4,22 @@ export default function Index() {
   const data = subway.DATA;
   return (
     <div>
-      <ul>
-        {data.map((item, index) => (
-          <li key={index}>
-            {item.bldn_nm} | {item.route}
-          </li>
-        ))}
-      </ul>
+      <table>
+        <thead>
+          <tr>
+            <th>역명</th>
+            <th>노선명</th>
+          </tr>
+        </thead>
+        <tbody>
+          {data.map((item, index) => (
+            <tr key={index}>
+              <td>{item.bldn_nm}</td>
+              <td>{item.route}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
