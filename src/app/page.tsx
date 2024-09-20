@@ -133,9 +133,14 @@ export default function Map() {
   const gtxA역 = useMarker(["수도권"], color.gtxAColor);
 
   useEffect(() => {
+    console.log(
+      ",--.  ,--.        ,--.  ,--.       ,--.   ,--.                 \n|  '--'  | ,--,--.|  '--'  | ,---. |  |   |  | ,--,--.,--. ,--.\n|  .--.  |' ,-.  ||  .--.  || .-. ||  |.'.|  |' ,-.  | \\  '  / \n|  |  |  |\\ '-'  ||  |  |  |' '-' '|   ,'.   |\\ '-'  |  \\   '  \n`--'  `--' `--`--'`--'  `--' `---' '--'   '--' `--`--'.-'  /   \n                                                      `---'    "
+    );
+  }, []);
+
+  useEffect(() => {
     const info = document.getElementById("info");
     const viewPort = window.innerWidth;
-    console.log(station);
     if (station) {
       if (viewPort < 768) {
         info!.style.transform = "translateY(-160px)";
@@ -153,7 +158,7 @@ export default function Map() {
     } else {
       info!.style.transform = "translateX(-100%)";
     }
-    setStation("")
+    setStation("");
   };
 
   return (
@@ -190,7 +195,9 @@ export default function Map() {
                   <span className="text-rose-600">{item.arvlMsg2}</span>
                 </div>
               ))
-            : isLoading ? "" : "열차 정보가 없습니다."}
+            : isLoading
+            ? ""
+            : "열차 정보가 없습니다."}
         </div>
       </div>
       <div className="bg-white h-screen w-1/5 z-[10000] fixed overflow-y-auto hidden">
