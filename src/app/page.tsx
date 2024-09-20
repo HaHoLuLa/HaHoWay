@@ -19,10 +19,10 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 export default function Map() {
   const { station } = useStationStore();
   const { data, isLoading } = useSWR<SubwayData>(
-    `http://swopenapi.seoul.go.kr/api/subway/${process.env.NEXT_PUBLIC_SUBWAY_API_KEY}/json/realtimeStationArrival/0/10/${station}`,
+    `/api/data?station=${station}`,
     fetcher
   );
-  
+
   const [check, setCheck] = useState({
     _1호선: true,
     _2호선: true,
@@ -49,7 +49,7 @@ export default function Map() {
     의정부경전철: true,
     gtxA: true,
   });
-  
+
   const _1호선 = useLine(["1호선"], color.line1Color); // ok
   const 장항선 = useLine(["장항선"], color.line1Color);
   const 경부선 = useLine(["경부선"], color.line1Color);
@@ -209,7 +209,9 @@ export default function Map() {
           ))}
         </ul>
       </div>
-      <APIProvider apiKey={process.env.NEXT_PUBLIC_MAP_API_KEY || "YOUR_API_KEY"}>
+      <APIProvider
+        apiKey={process.env.NEXT_PUBLIC_MAP_API_KEY || "YOUR_API_KEY"}
+      >
         <DeckGL
           layers={[
             check._1호선 && _1호선,
