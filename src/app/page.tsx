@@ -17,7 +17,7 @@ import axios from "axios";
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 export default function Map() {
-  const { station } = useStationStore();
+  const { station, setStation } = useStationStore();
   const { data, isLoading } = useSWR<SubwayData>(
     `/api/data?station=${station}`,
     fetcher
@@ -153,6 +153,7 @@ export default function Map() {
     } else {
       info!.style.transform = "translateX(-100%)";
     }
+    setStation("")
   };
 
   return (
@@ -189,7 +190,7 @@ export default function Map() {
                   <span className="text-rose-600">{item.arvlMsg2}</span>
                 </div>
               ))
-            : "열차 정보가 없습니다."}
+            : isLoading ? "" : "열차 정보가 없습니다."}
         </div>
       </div>
       <div className="bg-white h-screen w-1/5 z-[10000] fixed overflow-y-auto hidden">
