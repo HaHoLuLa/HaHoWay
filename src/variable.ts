@@ -42,6 +42,7 @@ export const subwayColors: { [key: string]: Color } = {
   "1077": 신분당선Color,
   "1092": 우이신설선Color,
   "1093": 서해선Color,
+  "1094": 신림선Color,
   "1081": 경강선Color,
   "1032": gtxAColor,
 };

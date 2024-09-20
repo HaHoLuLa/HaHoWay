@@ -173,21 +173,23 @@ export default function Map() {
           </button>
         </div>
         <div>
-          {data?.realtimeArrivalList?.map((item, index) => (
-            <div key={index} className="flex justify-between">
-              <span
-                style={{
-                  color: `rgba(${color.subwayColors[item.subwayId][0]}, ${
-                    color.subwayColors[item.subwayId][1]
-                  }, ${color.subwayColors[item.subwayId][2]})`,
-                }}
-                className={`font-bold`}
-              >
-                {item.bstatnNm}행
-              </span>
-              <span className="text-rose-600">{item.arvlMsg2}</span>
-            </div>
-          ))}
+          {data?.realtimeArrivalList
+            ? data?.realtimeArrivalList?.map((item, index) => (
+                <div key={index} className="flex justify-between">
+                  <span
+                    style={{
+                      color: `rgba(${color.subwayColors[item.subwayId][0]}, ${
+                        color.subwayColors[item.subwayId][1]
+                      }, ${color.subwayColors[item.subwayId][2]})`,
+                    }}
+                    className={`font-bold`}
+                  >
+                    {item.bstatnNm}행
+                  </span>
+                  <span className="text-rose-600">{item.arvlMsg2}</span>
+                </div>
+              ))
+            : "열차 정보가 없습니다."}
         </div>
       </div>
       <div className="bg-white h-screen w-1/5 z-[10000] fixed overflow-y-auto hidden">
