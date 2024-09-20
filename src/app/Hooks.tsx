@@ -43,6 +43,7 @@ export const useMarker = (lineNum: string[], color: Color) => {
   const { station, setStation } = useStationStore();
   const line = subway.DATA.filter((item) => lineNum.some((num) => item.route.startsWith(num)));
   const lineData = line.map((item) => ({
+    line: item.route,
     name: item.bldn_nm,
     lat: parseFloat(item.lat),
     lng: parseFloat(item.lot),

@@ -24,3 +24,24 @@ export const 김포골드라인Color: Color = [167, 136, 45]
 export const 에버라인선Color: Color = [108, 169, 66]
 export const 의정부경전철Color: Color = [235, 135, 50]
 export const gtxAColor: Color = [146, 101, 143]
+export const subwayColors: { [key: string]: Color } = {
+  "1001": line1Color,
+  "1002": line2Color,
+  "1003": line3Color,
+  "1004": line4Color,
+  "1005": line5Color,
+  "1006": line6Color,
+  "1007": line7Color,
+  "1008": line8Color,
+  "1009": line9Color,
+  "1061": 경의중앙선Color,
+  "1063": 경의중앙선Color,
+  "1065": 공항철도Color,
+  "1067": 경춘선Color,
+  "1075": 수인분당선Color,
+  "1077": 신분당선Color,
+  "1092": 우이신설선Color,
+  "1093": 서해선Color,
+  "1081": 경강선Color,
+  "1032": gtxAColor,
+};

@@ -3,24 +3,26 @@
 import {
   APIProvider,
   Map as GoogleMap,
-  Marker,
   limitTiltRange,
 } from "@vis.gl/react-google-maps";
-import subway from "./assets/subwayStations.json";
-import { DeckGL, type PickingInfo } from "deck.gl";
+import { DeckGL } from "deck.gl";
 import { useLine, useMarker } from "./Hooks";
-import * as color from "../variable";
+import * as color from "@/variable";
 import { ChangeEvent, useEffect, useState } from "react";
-import { Station } from "@/types";
+import { SubwayData } from "@/types";
 import { useStationStore } from "@/store";
+import useSWR from "swr";
+import axios from "axios";
+
+const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 export default function Map() {
-  const subwayPosition = subway.DATA.map((item) => ({
-    name: item.bldn_nm,
-    lat: parseFloat(item.lat),
-    lng: parseFloat(item.lot),
-  }));
-  const { station, setStation } = useStationStore();
+  const { station } = useStationStore();
+  const { data, isLoading } = useSWR<SubwayData>(
+    `http://swopenapi.seoul.go.kr/api/subway/${process.env.NEXT_PUBLIC_SUBWAY_API_KEY}/json/realtimeStationArrival/0/10/${station}`,
+    fetcher
+  );
+  
   const [check, setCheck] = useState({
     _1호선: true,
     _2호선: true,
@@ -47,7 +49,7 @@ export default function Map() {
     의정부경전철: true,
     gtxA: true,
   });
-
+  
   const _1호선 = useLine(["1호선"], color.line1Color); // ok
   const 장항선 = useLine(["장항선"], color.line1Color);
   const 경부선 = useLine(["경부선"], color.line1Color);
@@ -72,10 +74,10 @@ export default function Map() {
   const 인천1호선 = useLine(["인천1"], color.인천1호선Color); // ok
   const 인천2호선 = useLine(["인천2"], color.인천2호선Color); // ok
   const 경강선 = useLine(["경강선"], color.경강선Color); // ok
-  const 경의중앙선 = useLine(
-    ["경의중앙선", "중앙선", "중경원선"],
-    color.경의중앙선Color
-  );
+  const 경의중앙선 = useLine(["경의중앙선"], color.경의중앙선Color);
+  const 중앙선 = useLine(["중앙선"], color.경의중앙선Color);
+  const 중경원선 = useLine(["중경원선"], color.경의중앙선Color);
+  const 신촌행 = useLine(["신촌행"], color.경의중앙선Color);
   const 경춘선 = useLine(["경춘선"], color.경춘선Color); // 임시 ok
   const 공항철도 = useLine(["공항철도"], color.공항철도Color); // ok
   const 서해선 = useLine(["서해선"], color.서해선Color); // 임시
@@ -115,7 +117,7 @@ export default function Map() {
   const 인천2호선역 = useMarker(["인천2"], color.인천2호선Color);
   const 경강선역 = useMarker(["경강선"], color.경강선Color);
   const 경의중앙선역 = useMarker(
-    ["경의중앙선", "중앙선", "중경원선"],
+    ["경의중앙선", "중앙선", "중경원선", "신촌행"],
     color.경의중앙선Color
   );
   const 경춘선역 = useMarker(["경춘선"], color.경춘선Color);
@@ -147,7 +149,7 @@ export default function Map() {
     const info = document.getElementById("info");
     const viewPort = window.innerWidth;
     if (viewPort < 768) {
-      info!.style.transform = "translateY(160px)";
+      info!.style.transform = "translateY(384px)";
     } else {
       info!.style.transform = "translateX(-100%)";
     }
@@ -157,11 +159,35 @@ export default function Map() {
     <>
       <div
         id="info"
-        className="md:w-[25%] w-full bg-white md:h-screen h-40 fixed md:bottom-0 bottom-[-160px] transition-all duration-300 ease-in-out z-10 border-t md:left-[-25%] left-0"
+        className="md:w-[20%] w-full bg-white md:h-screen h-96 fixed md:bottom-0 -bottom-96 transition-all duration-300 ease-in-out z-10 border-t md:left-[-20%] left-0 px-3 pt-2"
       >
-        <div className="flex justify-between">
-          {station ? station : "역을 선택하세요"}{" "}
-          <button onClick={handleClose} className="text-xl">&times;</button>
+        <div className="flex justify-between relative">
+          <span className="text-lg">{isLoading ? "로딩중" : station}</span>
+          {/* {window.innerWidth < 768 && (
+            <button className="left-1/2 -translate-x-1/2 font-bold text-xl absolute">
+              ▲▼
+            </button>
+          )} */}
+          <button onClick={handleClose} className="text-2xl p-0">
+            &times;
+          </button>
+        </div>
+        <div>
+          {data?.realtimeArrivalList?.map((item, index) => (
+            <div key={index} className="flex justify-between">
+              <span
+                style={{
+                  color: `rgba(${color.subwayColors[item.subwayId][0]}, ${
+                    color.subwayColors[item.subwayId][1]
+                  }, ${color.subwayColors[item.subwayId][2]})`,
+                }}
+                className={`font-bold`}
+              >
+                {item.bstatnNm}행
+              </span>
+              <span className="text-rose-600">{item.arvlMsg2}</span>
+            </div>
+          ))}
         </div>
       </div>
       <div className="bg-white h-screen w-1/5 z-[10000] fixed overflow-y-auto hidden">
@@ -183,7 +209,7 @@ export default function Map() {
           ))}
         </ul>
       </div>
-      <APIProvider apiKey={process.env.NEXT_PUBLIC_API_KEY || "YOUR_API"}>
+      <APIProvider apiKey={process.env.NEXT_PUBLIC_MAP_API_KEY || "YOUR_API_KEY"}>
         <DeckGL
           layers={[
             check._1호선 && _1호선,
@@ -210,6 +236,9 @@ export default function Map() {
             check.김포골드라인 && 김포골드라인,
             check.서해선 && 서해선,
             check.경의중앙선 && 경의중앙선,
+            check.경의중앙선 && 중앙선,
+            check.경의중앙선 && 중경원선,
+            check.경의중앙선 && 신촌행,
             check.경춘선 && 경춘선,
             check.공항철도 && 공항철도,
             check.에버라인선 && 에버라인선,
@@ -260,16 +289,11 @@ export default function Map() {
           onViewStateChange={limitTiltRange}
           getTooltip={({ object }) => object?.name}
         >
-          <GoogleMap mapId={"dfa9c89e5dca4495"}>
-            {/* defaultBounds={{north: 37.7019,
-            south: 37.4283,
-            east: 127.1838,
-            west: 126.7644}} */}
-            {/* {subwayPosition.map((item, index) => (
-              <Marker position={item} key={index} />
-            ))} */}
-            {/* <Marker position={{lat: 37, lng: 127}} onClick={() => console.log("클릭됨")} /> */}
-          </GoogleMap>
+          <GoogleMap
+            mapId={"dfa9c89e5dca4495"}
+            defaultCenter={{ lat: 0, lng: 0 }}
+            defaultZoom={0}
+          />
         </DeckGL>
       </APIProvider>
     </>
