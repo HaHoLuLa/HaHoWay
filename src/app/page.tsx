@@ -11,7 +11,7 @@ import * as color from "@/variable";
 import { ChangeEvent, useEffect, useState } from "react";
 import { SubwayData } from "@/types";
 import { useStationStore } from "@/store";
-import useSWR from "swr";
+import useSWR, { mutate } from "swr";
 import axios from "axios";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
@@ -20,7 +20,10 @@ export default function Map() {
   const { station, setStation } = useStationStore();
   const { data, isLoading } = useSWR<SubwayData>(
     `/api/data?station=${station}`,
-    fetcher
+    fetcher,
+    {
+      refreshInterval: 5000,
+    }
   );
 
   const [check, setCheck] = useState({
@@ -174,9 +177,12 @@ export default function Map() {
               ▲▼
             </button>
           )} */}
-          <button onClick={handleClose} className="text-2xl p-0">
-            &times;
-          </button>
+          <div>
+            <button onClick={() => mutate(`/api/data?station=${station}`)}>reload</button>
+            <button onClick={handleClose} className="text-2xl p-0">
+              &times;
+            </button>
+          </div>
         </div>
         <div>
           {data?.realtimeArrivalList
