@@ -7,7 +7,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const response = await axios.get(
-      `http://swopenapi.seoul.go.kr/api/subway/${process.env.NEXT_PUBLIC_SUBWAY_API_KEY}/json/realtimeStationArrival/0/10/${station}`
+      `http://swopenapi.seoul.go.kr/api/subway/${process.env.NEXT_PUBLIC_SUBWAY_API_KEY}/json/realtimeStationArrival/0/30/${station}`
     );
 
     // 응답 데이터를 JSON 형식으로 반환

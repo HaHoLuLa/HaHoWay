@@ -19,7 +19,7 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 export default function Map() {
   const { station, setStation } = useStationStore();
   const { data, isLoading } = useSWR<SubwayData>(
-    `/api/data?station=${station}`,
+    station ? `/api/data?station=${station}` : null,
     fetcher,
     {
       refreshInterval: 5000,
@@ -81,10 +81,10 @@ export default function Map() {
   const 중앙선 = useLine(["중앙선"], color.경의중앙선Color);
   const 중경원선 = useLine(["중경원선"], color.경의중앙선Color);
   const 신촌행 = useLine(["신촌행"], color.경의중앙선Color);
-  const 경춘선 = useLine(["경춘선"], color.경춘선Color); // 임시 ok
+  const 경춘선 = useLine(["경춘선"], color.경춘선Color); // ok
   const 공항철도 = useLine(["공항철도"], color.공항철도Color); // ok
-  const 서해선 = useLine(["서해선"], color.서해선Color); // 임시
-  const 수인분당선 = useLine(["수인선", "분당선"], color.수인분당선Color); // 임시 ok
+  const 서해선 = useLine(["서해선"], color.서해선Color); // ok
+  const 수인분당선 = useLine(["수인선", "분당선"], color.수인분당선Color); // ok
   const 신분당선 = useLine(["신분당"], color.신분당선Color); // ok
   const 신림선 = useLine(["신림선"], color.신림선Color); // ok
   const 우이신설선 = useLine(["우이"], color.우이신설선Color); // ok
@@ -164,6 +164,10 @@ export default function Map() {
     setStation("");
   };
 
+  useEffect(() => {
+    console.log(data?.realtimeArrivalList)
+  }, [data])
+
   return (
     <>
       <div
@@ -171,20 +175,20 @@ export default function Map() {
         className="md:w-[20%] w-full bg-white md:h-screen h-96 fixed md:bottom-0 -bottom-96 transition-all duration-300 ease-in-out z-10 border-t md:left-[-20%] left-0 px-3 pt-2"
       >
         <div className="flex justify-between relative">
-          <span className="text-lg">{isLoading ? "로딩중" : station}</span>
+          <span className="text-lg pt-1">{isLoading ? "로딩중" : station}</span>
           {/* {window.innerWidth < 768 && (
             <button className="left-1/2 -translate-x-1/2 font-bold text-xl absolute">
               ▲▼
             </button>
           )} */}
           <div>
-            <button onClick={() => mutate(`/api/data?station=${station}`)}>reload</button>
+            <button onClick={() => mutate(`/api/data?station=${station}`)} className="text-2xl p-0">↻</button>
             <button onClick={handleClose} className="text-2xl p-0">
-              &times;
+              🗙
             </button>
           </div>
         </div>
-        <div>
+        <div className="mt-3">
           {data?.realtimeArrivalList
             ? data?.realtimeArrivalList?.map((item, index) => (
                 <div key={index} className="flex justify-between">
