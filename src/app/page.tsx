@@ -5,10 +5,10 @@ import {
   Map as GoogleMap,
   limitTiltRange,
 } from "@vis.gl/react-google-maps";
-import { DeckGL } from "deck.gl";
+import { DeckGL, MapViewState } from "deck.gl";
 import { useLine, useMarker } from "./Hooks";
 import * as color from "@/variable";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { SubwayData } from "@/types";
 import { useStationStore } from "@/store";
 import useSWR, { mutate } from "swr";
@@ -135,6 +135,15 @@ export default function Map() {
   const 경전철역 = useMarker(["의정부"], color.의정부경전철Color);
   const gtxA역 = useMarker(["수도권"], color.gtxAColor);
 
+  const applyViewStateConstraints = useCallback(
+    (viewState: MapViewState): any => ({
+      ...viewState,
+      longitude: Math.min(127.855699, Math.max(126.345945, viewState.longitude)),
+      latitude: Math.min(38.179692, Math.max(36.648304, viewState.latitude)),
+    }),
+    []
+  );
+
   useEffect(() => {
     console.log(
       ",--.  ,--.        ,--.  ,--.       ,--.   ,--.                 \n|  '--'  | ,--,--.|  '--'  | ,---. |  |   |  | ,--,--.,--. ,--.\n|  .--.  |' ,-.  ||  .--.  || .-. ||  |.'.|  |' ,-.  | \\  '  / \n|  |  |  |\\ '-'  ||  |  |  |' '-' '|   ,'.   |\\ '-'  |  \\   '  \n`--'  `--' `--`--'`--'  `--' `---' '--'   '--' `--`--'.-'  /   \n                                                      `---'    "
@@ -172,17 +181,24 @@ export default function Map() {
     <>
       <div
         id="info"
-        className="md:w-[20%] w-full bg-white md:h-screen h-96 fixed md:bottom-0 -bottom-96 transition-all duration-300 ease-in-out z-10 border-t md:left-[-20%] left-0 px-3 pt-2"
+        className="md:w-[20%] w-full bg-white md:h-screen h-96 fixed md:bottom-0 -bottom-96 transition-all duration-300 ease-in-out z-10 border-t md:left-[-20%] left-0 px-3 pt-2 shadow-lg shadow-gray-300"
       >
         <div className="flex justify-between relative">
-          <span className="text-lg pt-1 font-bold">{isLoading ? "로딩중" : station}</span>
+          <span className="text-lg pt-1 font-bold">
+            {isLoading ? "로딩중" : station}
+          </span>
           {/* {window.innerWidth < 768 && (
             <button className="left-1/2 -translate-x-1/2 font-bold text-xl absolute">
               ▲▼
             </button>
           )} */}
           <div>
-            <button onClick={() => mutate(`/api/data?station=${station}`)} className="text-2xl p-0 pr-2">↻</button>
+            <button
+              onClick={() => mutate(`/api/data?station=${station}`)}
+              className="text-2xl p-0 pr-2"
+            >
+              ↻
+            </button>
             <button onClick={handleClose} className="text-2xl p-0">
               &times;
             </button>
@@ -198,7 +214,7 @@ export default function Map() {
                         color.subwayColors[item.subwayId][1]
                       }, ${color.subwayColors[item.subwayId][2]})`,
                     }}
-                    className={`font-bold`}
+                    className="font-bold"
                   >
                     {item.bstatnNm}행
                   </span>
@@ -296,11 +312,9 @@ export default function Map() {
             check.의정부경전철 && 경전철역,
             check.gtxA && gtxA역,
           ]}
-          controller={
-            {
-              // dragRotate: false
-            }
-          }
+          controller={{
+            dragRotate: false,
+          }}
           initialViewState={{
             latitude: 37.5665,
             longitude: 126.978,
@@ -308,11 +322,27 @@ export default function Map() {
             maxZoom: 17,
             minZoom: 11,
           }}
-          onViewStateChange={limitTiltRange}
-          getTooltip={({ object }) => object?.name}
+          onViewStateChange={({ viewState }: any) =>
+            applyViewStateConstraints(viewState)
+          }
+          getTooltip={({ object }) => object && {
+            html: `<h1>${object.name}</h1>`,
+            style: {
+              backgroundColor: '#fff',
+              fontSize: '18px',
+              color: "black",
+              border: "4px solid",
+              borderColor: `rgba(${color.lineColors[object.line][0]}, ${
+                color.lineColors[object.line][1]
+              }, ${color.lineColors[object.line][2]})`,
+              borderRadius: "30px",
+              boxShadow: "2px 3px 4px lightgray",
+              fontWeight: "bold",
+              padding: "5px 10px"
+            }}}
         >
           <GoogleMap
-            mapId={"dfa9c89e5dca4495"}
+            mapId={"1126a248f639ef5c"}
             defaultCenter={{ lat: 0, lng: 0 }}
             defaultZoom={0}
           />
