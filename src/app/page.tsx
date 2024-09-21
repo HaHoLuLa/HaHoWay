@@ -164,9 +164,9 @@ export default function Map() {
     setStation("");
   };
 
-  useEffect(() => {
-    console.log(data?.realtimeArrivalList)
-  }, [data])
+  // useEffect(() => {
+  //   console.log(data?.realtimeArrivalList)
+  // }, [data])
 
   return (
     <>
