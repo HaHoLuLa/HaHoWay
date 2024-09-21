@@ -175,16 +175,16 @@ export default function Map() {
         className="md:w-[20%] w-full bg-white md:h-screen h-96 fixed md:bottom-0 -bottom-96 transition-all duration-300 ease-in-out z-10 border-t md:left-[-20%] left-0 px-3 pt-2"
       >
         <div className="flex justify-between relative">
-          <span className="text-lg pt-1">{isLoading ? "로딩중" : station}</span>
+          <span className="text-lg pt-1 font-bold">{isLoading ? "로딩중" : station}</span>
           {/* {window.innerWidth < 768 && (
             <button className="left-1/2 -translate-x-1/2 font-bold text-xl absolute">
               ▲▼
             </button>
           )} */}
           <div>
-            <button onClick={() => mutate(`/api/data?station=${station}`)} className="text-2xl p-0">↻</button>
+            <button onClick={() => mutate(`/api/data?station=${station}`)} className="text-2xl p-0 pr-2">↻</button>
             <button onClick={handleClose} className="text-2xl p-0">
-              🗙
+              &times;
             </button>
           </div>
         </div>
