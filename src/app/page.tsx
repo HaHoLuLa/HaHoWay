@@ -336,7 +336,7 @@ export default function Map() {
                 color.lineColors[object.line][1]
               }, ${color.lineColors[object.line][2]})`,
               borderRadius: "30px",
-              boxShadow: "2px 3px 4px lightgray",
+              // boxShadow: "2px 3px 4px lightgray",
               fontWeight: "bold",
               padding: "5px 10px"
             }}}
