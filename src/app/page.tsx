@@ -10,7 +10,7 @@ import { useLine, useMarker } from "./Hooks";
 import * as color from "@/variable";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
 import { SubwayData, SubwayDataJson } from "@/types";
-import { useStationStore } from "@/store";
+import { useSearchStore, useStationStore, useViewStateStore } from "@/store";
 import useSWR, { mutate } from "swr";
 import axios from "axios";
 import { getChoseong } from "es-hangul";
@@ -54,14 +54,16 @@ export default function Map() {
     의정부경전철: true,
     gtxA: true,
   });
-  const [search, setSearch] = useState("");
-  const [initialViewState, setInitialViewState] = useState<MapViewState>({
-    latitude: 37.5665,
-    longitude: 126.978,
-    zoom: 11,
-    maxZoom: 17,
-    minZoom: 11,
-  });
+  // const [search, setSearch] = useState("");
+  // const [initialViewState, setInitialViewState] = useState<MapViewState>({
+  //   latitude: 37.5665,
+  //   longitude: 126.978,
+  //   zoom: 11,
+  //   maxZoom: 17,
+  //   minZoom: 11,
+  // });
+  const { initialViewState, setInitialViewState } = useViewStateStore();
+  const { search, setSearch } = useSearchStore();
 
   const _1호선 = useLine(["1호선"], color.line1Color); // ok
   const 장항선 = useLine(["장항선"], color.line1Color);
@@ -145,33 +147,21 @@ export default function Map() {
   const 경전철역 = useMarker(["의정부"], color.의정부경전철Color);
   const gtxA역 = useMarker(["수도권"], color.gtxAColor);
 
-  const applyViewStateConstraints = useCallback(
-    (viewState: MapViewState): any => ({
-      ...viewState,
-      longitude: Math.min(
-        127.855699,
-        Math.max(126.345945, viewState.longitude)
-      ),
-      latitude: Math.min(38.179692, Math.max(36.648304, viewState.latitude)),
-    }),
-    []
-  );
-
-  const flyToStaion = useCallback(
-    (station: SubwayDataJson) => {
-      setInitialViewState({
-        maxZoom: 17,
-        minZoom: 11,
-        zoom: 16,
-        latitude: parseFloat(station.lat),
-        longitude: parseFloat(station.lot),
-        transitionDuration: "auto",
-        transitionInterpolator: new FlyToInterpolator({ speed: 2 }),
-      });
-      setStation(station.bldn_nm);
-    },
-    [setStation]
-  );
+  const applyViewStateConstraints = (viewState: MapViewState): any => ({
+    ...viewState,
+    longitude: Math.min(127.855699, Math.max(126.345945, viewState.longitude)),
+    latitude: Math.min(38.179692, Math.max(36.648304, viewState.latitude)),
+  });
+  const flyToStaion = (station: SubwayDataJson) => {
+    setInitialViewState({
+      ...initialViewState,
+      zoom: 16,
+      latitude: parseFloat(station.lat),
+      longitude: parseFloat(station.lot),
+    });
+    setStation(station.bldn_nm);
+    setSearch(station.bldn_nm);
+  };
 
   useEffect(() => {
     console.log(
@@ -200,6 +190,7 @@ export default function Map() {
       info!.style.transform = "translateX(-100%)";
     }
     setStation("");
+    setSearch("");
   };
 
   // useEffect(() => {
@@ -215,6 +206,7 @@ export default function Map() {
           onChange={(e) => {
             setSearch(e.target.value);
           }}
+          value={search}
         />
         <div className="max-h-96 overflow-y-auto pr-4">
           {subway.DATA.filter(

@@ -2,7 +2,7 @@
 import subway from "./assets/subwayStations.json"
 import { LineLayer, ScatterplotLayer } from "deck.gl";
 import type { Color, Station, Line } from "@/types";
-import { useStationStore } from "@/store";
+import { useSearchStore, useStationStore, useViewStateStore } from "@/store";
 
 /**
  * 노선을 간단하게 그리기 위한 훅
@@ -40,7 +40,9 @@ export const useLine = (lineNum: string[], color: Color): LineLayer => {
  * @returns ScatterplotLayer 반환
  */
 export const useMarker = (lineNum: string[], color: Color) => {
-  const { station, setStation } = useStationStore();
+  const { setStation } = useStationStore();
+  const { initialViewState, setInitialViewState } = useViewStateStore()
+  const { setSearch } = useSearchStore()
   const line = subway.DATA.filter((item) => lineNum.some((num) => item.route.startsWith(num)));
   const lineData = line.map((item) => ({
     line: item.route,
@@ -63,8 +65,15 @@ export const useMarker = (lineNum: string[], color: Color) => {
     lineWidthMinPixels: 3,
     lineWidthMaxPixels: 10,
     onClick: (pickingInfo, event) => {
-      const { name } = pickingInfo.object
+      const { name, lat, lng } = pickingInfo.object
       setStation(name);
+      setInitialViewState({
+        ...initialViewState,
+        zoom: 16,
+        longitude: lng,
+        latitude: lat
+      })
+      setSearch("")
     },
   });
 
