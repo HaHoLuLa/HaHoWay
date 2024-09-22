@@ -6,10 +6,14 @@ export async function GET(request: NextRequest) {
   const station = searchParams.get("station") || "서울";
 
   try {
-    const response = await axios.get(
-      `http://swopenapi.seoul.go.kr/api/subway/${process.env.NEXT_PUBLIC_SUBWAY_API_KEY}/json/realtimeStationArrival/0/30/${station}`
+    let response = await axios.get(
+      `http://swopenapi.seoul.go.kr/api/subway/${process.env.NEXT_PUBLIC_SUBWAY_API_KEY}/json/realtimeStationArrival/0/20/${station}`
     );
 
+    if (response.data.code === "ERROR-337")
+      response = await axios.get(
+        `http://swopenapi.seoul.go.kr/api/subway/${process.env.NEXT_PUBLIC_SUBWAY_API_KEY_2}/json/realtimeStationArrival/0/20/${station}`
+      );
     // 응답 데이터를 JSON 형식으로 반환
     return NextResponse.json(response.data);
   } catch (error) {

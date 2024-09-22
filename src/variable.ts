@@ -85,6 +85,7 @@ export const lineColors: Record<string, Color> = {
   "분당선": 수인분당선Color,
   "신분당선": 신분당선Color,
   "신분당선(연장)": 신분당선Color,
+  "신분당선(연장2)": 신분당선Color,
   "신림선": 신림선Color,
   "우이신설선": 우이신설선Color,
   "김포골드라인": 김포골드라인Color,

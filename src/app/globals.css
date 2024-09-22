@@ -12,3 +12,21 @@
 * {
   font-family: "SeoulNamsanM";
 }
+
+::-webkit-scrollbar {
+  width: 3px;
+  height: 3px;
+  /* 스크롤바의 너비 */
+}
+
+::-webkit-scrollbar-thumb {
+  background: cornflowerblue;
+  /* 스크롤바의 색상 */
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-track {
+  /* background: rgba(49, 51, 56, 0.3); */
+  background: transparent;
+  /*스크롤바 뒷 배경 색상*/
+}

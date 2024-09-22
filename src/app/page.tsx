@@ -3,16 +3,18 @@
 import {
   APIProvider,
   Map as GoogleMap,
-  limitTiltRange,
+  // limitTiltRange,
 } from "@vis.gl/react-google-maps";
-import { DeckGL, MapViewState } from "deck.gl";
+import { DeckGL, FlyToInterpolator, MapViewState } from "deck.gl";
 import { useLine, useMarker } from "./Hooks";
 import * as color from "@/variable";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
-import { SubwayData } from "@/types";
+import { SubwayData, SubwayDataJson } from "@/types";
 import { useStationStore } from "@/store";
 import useSWR, { mutate } from "swr";
 import axios from "axios";
+import { getChoseong } from "es-hangul";
+import subway from "./assets/subwayStations.json";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
@@ -51,6 +53,14 @@ export default function Map() {
     에버라인선: true,
     의정부경전철: true,
     gtxA: true,
+  });
+  const [search, setSearch] = useState("");
+  const [initialViewState, setInitialViewState] = useState<MapViewState>({
+    latitude: 37.5665,
+    longitude: 126.978,
+    zoom: 11,
+    maxZoom: 17,
+    minZoom: 11,
   });
 
   const _1호선 = useLine(["1호선"], color.line1Color); // ok
@@ -138,10 +148,29 @@ export default function Map() {
   const applyViewStateConstraints = useCallback(
     (viewState: MapViewState): any => ({
       ...viewState,
-      longitude: Math.min(127.855699, Math.max(126.345945, viewState.longitude)),
+      longitude: Math.min(
+        127.855699,
+        Math.max(126.345945, viewState.longitude)
+      ),
       latitude: Math.min(38.179692, Math.max(36.648304, viewState.latitude)),
     }),
     []
+  );
+
+  const flyToStaion = useCallback(
+    (station: SubwayDataJson) => {
+      setInitialViewState({
+        maxZoom: 17,
+        minZoom: 11,
+        zoom: 16,
+        latitude: parseFloat(station.lat),
+        longitude: parseFloat(station.lot),
+        transitionDuration: "auto",
+        transitionInterpolator: new FlyToInterpolator({ speed: 2 }),
+      });
+      setStation(station.bldn_nm);
+    },
+    [setStation]
   );
 
   useEffect(() => {
@@ -179,6 +208,54 @@ export default function Map() {
 
   return (
     <>
+      <div className="fixed z-[10000] md:right-0 right-1/2 md:translate-x-0 translate-x-1/2 w-11/12 md:w-1/3 lg:w-1/5 xl:1/6 mt-3 md:mr-3 rounded-[20px] shadow-lg py-2 pl-4 bg-white">
+        <input
+          className="focus:outline-none w-[95%] px-1"
+          placeholder="검색할 역을 입력하세요"
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
+        />
+        <div className="max-h-96 overflow-y-auto pr-4">
+          {subway.DATA.filter(
+            (item) =>
+              search !== "" &&
+              (getChoseong(item.bldn_nm).includes(search) ||
+                item.bldn_nm.includes(search))
+          )
+            .reduce((acc: SubwayDataJson[], current) => {
+              if (
+                !acc.some(
+                  (item) =>
+                    item.bldn_nm === current.bldn_nm &&
+                    item.route === current.route
+                )
+              ) {
+                acc.push(current);
+              }
+              return acc;
+            }, [])
+            .map((item, index) => (
+              <div
+                key={index}
+                className="hover:bg-gray-100 transition-colors ease-in-out duration-300 flex justify-between last:rounded-b-xl p-1"
+                onClick={() => flyToStaion(item)}
+              >
+                <span>{item.bldn_nm}</span>
+                <span
+                  style={{
+                    color: `rgba(${color.lineColors[item.route][0]}, ${
+                      color.lineColors[item.route][1]
+                    }, ${color.lineColors[item.route][2]})`,
+                  }}
+                  className="font-bold"
+                >
+                  {item.route}
+                </span>
+              </div>
+            ))}
+        </div>
+      </div>
       <div
         id="info"
         className="md:w-[20%] w-full bg-white md:h-screen h-96 fixed md:bottom-0 -bottom-96 transition-all duration-300 ease-in-out z-10 border-t md:left-[-20%] left-0 px-3 pt-2 shadow-lg shadow-gray-300"
@@ -315,31 +392,28 @@ export default function Map() {
           controller={{
             dragRotate: false,
           }}
-          initialViewState={{
-            latitude: 37.5665,
-            longitude: 126.978,
-            zoom: 11,
-            maxZoom: 17,
-            minZoom: 11,
-          }}
+          initialViewState={initialViewState}
           onViewStateChange={({ viewState }: any) =>
             applyViewStateConstraints(viewState)
           }
-          getTooltip={({ object }) => object && {
-            html: `<h1>${object.name}</h1>`,
-            style: {
-              backgroundColor: '#fff',
-              fontSize: '18px',
-              color: "black",
-              border: "4px solid",
-              borderColor: `rgba(${color.lineColors[object.line][0]}, ${
-                color.lineColors[object.line][1]
-              }, ${color.lineColors[object.line][2]})`,
-              borderRadius: "30px",
-              // boxShadow: "2px 3px 4px lightgray",
-              fontWeight: "bold",
-              padding: "5px 10px"
-            }}}
+          getTooltip={({ object }) =>
+            object && {
+              html: `<h1>${object.name}</h1>`,
+              style: {
+                backgroundColor: "#fff",
+                fontSize: "18px",
+                color: "black",
+                border: "4px solid",
+                borderColor: `rgba(${color.lineColors[object.line][0]}, ${
+                  color.lineColors[object.line][1]
+                }, ${color.lineColors[object.line][2]})`,
+                borderRadius: "30px",
+                boxShadow: "2px 3px 4px lightgray",
+                fontWeight: "bold",
+                padding: "5px 10px",
+              },
+            }
+          }
         >
           <GoogleMap
             mapId={"1126a248f639ef5c"}

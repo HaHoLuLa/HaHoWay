@@ -55,3 +55,12 @@ export type SubwayData = {
   errorMessage: ErrorMessage;
   realtimeArrivalList: RealtimeArrival[];
 };
+
+
+export type SubwayDataJson = {
+  bldn_id: string;
+  route: string;
+  lot: string;
+  bldn_nm: string;
+  lat: string;
+}
