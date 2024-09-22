@@ -9,6 +9,7 @@ interface StationStore {
 interface ViewState {
   initialViewState: MapViewState,
   setInitialViewState: (initialViewState: MapViewState) => void;
+  // setInitialViewState: (updater: (prevState: MapViewState) => MapViewState) => void;
 }
 
 interface SearchStore {
@@ -32,6 +33,9 @@ const useViewStateStore = create<ViewState>((set) => ({
     transitionInterpolator: new FlyToInterpolator({ speed: 3 }),
   },
   setInitialViewState: (initialViewState) => set(() => ({ initialViewState }))
+  // setInitialViewState: (updater) => set((state) => ({
+  //   initialViewState: updater(state.initialViewState), // 기존 상태를 함수형으로 업데이트
+  // })),
 }))
 
 const useSearchStore = create<SearchStore>((set) => ({

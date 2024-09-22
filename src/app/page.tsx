@@ -20,6 +20,8 @@ const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 export default function Map() {
   const { station, setStation } = useStationStore();
+  const { initialViewState, setInitialViewState } = useViewStateStore();
+  const { search, setSearch } = useSearchStore();
   const { data, isLoading } = useSWR<SubwayData>(
     station ? `/api/data?station=${station}` : null,
     fetcher,
@@ -54,16 +56,10 @@ export default function Map() {
     의정부경전철: true,
     gtxA: true,
   });
-  // const [search, setSearch] = useState("");
-  // const [initialViewState, setInitialViewState] = useState<MapViewState>({
-  //   latitude: 37.5665,
-  //   longitude: 126.978,
-  //   zoom: 11,
-  //   maxZoom: 17,
-  //   minZoom: 11,
-  // });
-  const { initialViewState, setInitialViewState } = useViewStateStore();
-  const { search, setSearch } = useSearchStore();
+  const [location, setLocation] = useState({
+    lat: 37.5665,
+    lng: 126.978,
+  });
 
   const _1호선 = useLine(["1호선"], color.line1Color); // ok
   const 장항선 = useLine(["장항선"], color.line1Color);
@@ -147,11 +143,24 @@ export default function Map() {
   const 경전철역 = useMarker(["의정부"], color.의정부경전철Color);
   const gtxA역 = useMarker(["수도권"], color.gtxAColor);
 
+  const handleClose = useCallback(() => {
+    const info = document.getElementById("info");
+    const viewPort = window.innerWidth;
+    if (viewPort < 768) {
+      info!.style.transform = "translateY(384px)";
+    } else {
+      info!.style.transform = "translateX(-100%)";
+    }
+    setStation("");
+    setSearch("");
+  }, [setSearch, setStation]);
+
   const applyViewStateConstraints = (viewState: MapViewState): any => ({
     ...viewState,
     longitude: Math.min(127.855699, Math.max(126.345945, viewState.longitude)),
     latitude: Math.min(38.179692, Math.max(36.648304, viewState.latitude)),
   });
+
   const flyToStaion = (station: SubwayDataJson) => {
     setInitialViewState({
       ...initialViewState,
@@ -160,7 +169,7 @@ export default function Map() {
       longitude: parseFloat(station.lot),
     });
     setStation(station.bldn_nm);
-    setSearch(station.bldn_nm);
+    setSearch("");
   };
 
   useEffect(() => {
@@ -168,6 +177,26 @@ export default function Map() {
       ",--.  ,--.        ,--.  ,--.       ,--.   ,--.                 \n|  '--'  | ,--,--.|  '--'  | ,---. |  |   |  | ,--,--.,--. ,--.\n|  .--.  |' ,-.  ||  .--.  || .-. ||  |.'.|  |' ,-.  | \\  '  / \n|  |  |  |\\ '-'  ||  |  |  |' '-' '|   ,'.   |\\ '-'  |  \\   '  \n`--'  `--' `--`--'`--'  `--' `---' '--'   '--' `--`--'.-'  /   \n                                                      `---'    "
     );
   }, []);
+
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition((position) => {
+        setInitialViewState({
+          maxZoom: 17,
+          minZoom: 11,
+          transitionDuration: "auto",
+          transitionInterpolator: new FlyToInterpolator({ speed: 3 }),
+          zoom: 11,
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        setLocation({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+        });
+      });
+    }
+  }, [setInitialViewState]);
 
   useEffect(() => {
     const info = document.getElementById("info");
@@ -181,24 +210,25 @@ export default function Map() {
     }
   }, [station]);
 
-  const handleClose = () => {
-    const info = document.getElementById("info");
-    const viewPort = window.innerWidth;
-    if (viewPort < 768) {
-      info!.style.transform = "translateY(384px)";
-    } else {
-      info!.style.transform = "translateX(-100%)";
-    }
-    setStation("");
-    setSearch("");
-  };
-
-  // useEffect(() => {
-  //   console.log(data?.realtimeArrivalList)
-  // }, [data])
-
   return (
     <>
+      <div
+        className="fixed z-[5000] bg-white w-10 h-10 rounded-full right-0 bottom-0 mb-3 mr-3 shadow-lg flex items-center justify-center"
+        // title="현위치"
+        onClick={() => {
+          setInitialViewState({
+            ...initialViewState,
+            longitude: location.lng,
+            latitude: location.lat,
+            zoom: 11,
+          });
+          handleClose();
+        }}
+      >
+        <div className="bg-white border-[2px] border-[cornflowerblue] rounded-full w-6 h-6 flex items-center justify-center relative">
+          <div className="bg-[cornflowerblue] rounded-full w-1 h-1"></div>
+        </div>
+      </div>
       <div className="fixed z-[10000] md:right-0 right-1/2 md:translate-x-0 translate-x-1/2 w-11/12 md:w-1/3 lg:w-1/5 xl:1/6 mt-3 md:mr-3 rounded-[20px] shadow-lg py-2 pl-4 bg-white">
         <input
           className="focus:outline-none w-[95%] px-1"
@@ -250,7 +280,7 @@ export default function Map() {
       </div>
       <div
         id="info"
-        className="md:w-[20%] w-full bg-white md:h-screen h-96 fixed md:bottom-0 -bottom-96 transition-all duration-300 ease-in-out z-10 border-t md:left-[-20%] left-0 px-3 pt-2 shadow-lg shadow-gray-300"
+        className="md:w-[20%] w-full bg-white md:h-screen h-96 fixed md:bottom-0 -bottom-96 transition-all duration-300 ease-in-out z-[10000] border-t md:left-[-20%] left-0 px-3 pt-2 shadow-lg shadow-gray-300"
       >
         <div className="flex justify-between relative">
           <span className="text-lg pt-1 font-bold">
