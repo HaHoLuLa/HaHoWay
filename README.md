@@ -17,6 +17,7 @@
 - TypeScript
 - deck.gl
 - vis.gl
+- ES-Hangul
 
 ### 설치 방법
 
@@ -33,4 +34,9 @@ cd hahoway
 아래 명령어로 필요한 패키지들을 다운한다.
 ```bash
 npm install
+```
+
+마지막으로 다음 명령어를 통해 실행한다.
+```bash
+npm run dev
 ```
