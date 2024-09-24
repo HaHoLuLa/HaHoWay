@@ -9,7 +9,6 @@ import {
   DeckGL,
   FlyToInterpolator,
   MapViewState,
-  PathLayer,
   ScatterplotLayer,
 } from "deck.gl";
 import { useLine, useMarker } from "./Hooks";
@@ -67,6 +66,9 @@ export default function Map() {
     lng: 0.0,
   });
   const [user, setUser] = useState<ScatterplotLayer>();
+  const [width, setWidth] = useState(0);
+  const [startY, setStartY] = useState<number>(0);
+  const [isDrag, setIsDrag] = useState(false);
 
   const _1호선 = useLine(["1호선"], color.line1Color); // ok
   const 장항선 = useLine(["장항선"], color.line1Color);
@@ -154,7 +156,8 @@ export default function Map() {
     const info = document.getElementById("info");
     const viewPort = window.innerWidth;
     if (viewPort < 768) {
-      info!.style.transform = "translateY(384px)";
+      // info!.style.transform = "translateY(384px)";
+      info!.style.bottom = "-550px"
     } else {
       info!.style.transform = "translateX(-100%)";
     }
@@ -179,11 +182,57 @@ export default function Map() {
     setSearch("");
   };
 
-  useEffect(() => {
-    console.log(
-      ",--.  ,--.        ,--.  ,--.       ,--.   ,--.                 \n|  '--'  | ,--,--.|  '--'  | ,---. |  |   |  | ,--,--.,--. ,--.\n|  .--.  |' ,-.  ||  .--.  || .-. ||  |.'.|  |' ,-.  | \\  '  / \n|  |  |  |\\ '-'  ||  |  |  |' '-' '|   ,'.   |\\ '-'  |  \\   '  \n`--'  `--' `--`--'`--'  `--' `---' '--'   '--' `--`--'.-'  /   \n                                                      `---'    "
-    );
-  }, []);
+  const startDrag = (e: TouchEvent | MouseEvent) => {
+    setIsDrag(true);
+    if (e instanceof TouchEvent && e.touches) {
+      setStartY(e.touches[0].clientY);
+    } else if (e instanceof MouseEvent) {
+      setStartY(e.clientY);
+    }
+  };
+
+  const dragMove = useCallback(
+    (e: TouchEvent | MouseEvent) => {
+      const menu = document.getElementById("info");
+      if (!isDrag || !menu) return;
+
+      const currentY =
+        e instanceof TouchEvent ? e.touches[0].clientY : e.clientY;
+      const distanceMoved = startY - currentY;
+
+      // 스와이프 업: 메뉴가 올라가는 조건
+      if (distanceMoved > 0 && distanceMoved < window.innerHeight * 0.4) {
+        menu.style.bottom = `calc(-400px + ${distanceMoved}px)`;
+      }
+
+      // 스와이프 다운: 메뉴가 내려가는 조건
+      // if (distanceMoved < 0 && distanceMoved > -window.innerHeight * 0.4) {
+      //   menu.style.bottom = `calc(-20% - ${Math.abs(distanceMoved)}px)`;
+      // }
+
+      // 위로 스와이프 많이 했을 때 (100px 이상)
+      if (distanceMoved > 200) {
+        menu.style.bottom = "0"; // 메뉴가 완전히 올라옴
+      }
+
+      // 아래로 스와이프 많이 했을 때 (100px 이상)
+      // if (distanceMoved < -100) {
+      //   menu.style.bottom = "-20%"; // 메뉴가 완전히 내려감
+      // }
+    },
+    [isDrag, startY] // 의존성 배열에 isDrag와 startY를 추가
+  );
+
+  const endDrag = () => {
+    setIsDrag(false);
+  };
+
+  // const closeMenu = () => {
+  //   const menu = document.getElementById("info");
+  //   if (menu) {
+  //     menu.style.bottom = "-20%";
+  //   }
+  // };
 
   useEffect(() => {
     if (location.lat !== 37.5665 || location.lng !== 126.978) {
@@ -210,6 +259,10 @@ export default function Map() {
   }, [location]);
 
   useEffect(() => {
+    setWidth(window.innerWidth);
+    console.log(
+      ",--.  ,--.        ,--.  ,--.       ,--.   ,--.                 \n|  '--'  | ,--,--.|  '--'  | ,---. |  |   |  | ,--,--.,--. ,--.\n|  .--.  |' ,-.  ||  .--.  || .-. ||  |.'.|  |' ,-.  | \\  '  / \n|  |  |  |\\ '-'  ||  |  |  |' '-' '|   ,'.   |\\ '-'  |  \\   '  \n`--'  `--' `--`--'`--'  `--' `---' '--'   '--' `--`--'.-'  /   \n                                                      `---'    "
+    );
     let watchId: number;
     if (navigator.geolocation) {
       watchId = navigator.geolocation.watchPosition(
@@ -230,11 +283,19 @@ export default function Map() {
       );
     }
 
+    const handleResize = () => {
+      setWidth(window.innerWidth);
+    };
+
+    window.addEventListener("resize", handleResize);
+
     // 컴포넌트가 언마운트될 때 watchPosition을 중지
     return () => {
       if (navigator.geolocation && watchId) {
         navigator.geolocation.clearWatch(watchId);
       }
+
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
@@ -259,7 +320,7 @@ export default function Map() {
     const viewPort = window.innerWidth;
     if (station) {
       if (viewPort < 768) {
-        info!.style.transform = "translateY(-160px)";
+        info!.style.bottom = "-400px";
       } else {
         info!.style.transform = "translateX(100%)";
       }
@@ -272,6 +333,26 @@ export default function Map() {
     }
   }, [error, station, data]);
 
+  useEffect(() => {
+    const menu = document.getElementById("info");
+    if (window.innerWidth < 768 && station) {
+      menu!.addEventListener("touchstart", startDrag);
+      window.addEventListener("touchmove", dragMove);
+      window.addEventListener("touchend", endDrag);
+      menu!.addEventListener("mousedown", startDrag);
+      window.addEventListener("mousemove", dragMove);
+      window.addEventListener("mouseup", endDrag);
+    }
+    return () => {
+      menu!.removeEventListener("touchstart", startDrag);
+      window.removeEventListener("touchmove", dragMove);
+      window.removeEventListener("touchend", endDrag);
+      menu!.removeEventListener("mousedown", startDrag);
+      window.removeEventListener("mousemove", dragMove);
+      window.removeEventListener("mouseup", endDrag);
+    };
+  }, [dragMove, station]);
+
   return (
     <>
       <div
@@ -282,7 +363,7 @@ export default function Map() {
             ...initialViewState,
             longitude: location.lng,
             latitude: location.lat,
-            zoom: 11,
+            zoom: 13,
           });
           handleClose();
         }}
@@ -342,17 +423,17 @@ export default function Map() {
       </div>
       <div
         id="info"
-        className="md:w-[20%] w-full bg-white md:h-screen h-96 fixed md:bottom-0 -bottom-96 transition-all duration-300 ease-in-out z-[10000] border-t md:left-[-20%] left-0 px-3 pt-2 shadow-lg shadow-gray-300"
+        className="md:w-[20%] w-full bg-white md:h-screen h-[550px] fixed md:bottom-0 -bottom-[550px] transition-all duration-300 ease-in-out z-[10000] border-t md:left-[-20%] left-0 px-3 pt-2 shadow-lg shadow-gray-300 select-none"
       >
         <div className="flex justify-between relative">
           <span className="text-lg pt-1 font-bold">
             {isLoading ? "로딩중" : station}
           </span>
-          {/* {window.innerWidth < 768 && (
-            <button className="left-1/2 -translate-x-1/2 font-bold text-xl absolute">
-              ▲▼
-            </button>
-          )} */}
+          {width < 768 && (
+            <div className="left-1/2 -translate-x-1/2 font-bold text-xl absolute">
+              <div className="w-10 bg-[cornflowerblue] h-1 rounded-full" />
+            </div>
+          )}
           <div>
             <button
               onClick={() => mutate(`/api/data?station=${station}`)}
@@ -368,7 +449,7 @@ export default function Map() {
         <div className="mt-3">
           {data?.realtimeArrivalList
             ? data?.realtimeArrivalList?.map((item, index) => (
-                <div key={index} className="flex justify-between">
+                <div key={index} className="flex justify-between bg-white">
                   <span
                     style={{
                       color: `rgba(${color.subwayColors[item.subwayId][0]}, ${
