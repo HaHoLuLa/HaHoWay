@@ -5,7 +5,13 @@ import {
   Map as GoogleMap,
   // limitTiltRange,
 } from "@vis.gl/react-google-maps";
-import { DeckGL, FlyToInterpolator, MapViewState, PathLayer, ScatterplotLayer } from "deck.gl";
+import {
+  DeckGL,
+  FlyToInterpolator,
+  MapViewState,
+  PathLayer,
+  ScatterplotLayer,
+} from "deck.gl";
 import { useLine, useMarker } from "./Hooks";
 import * as color from "@/variable";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
@@ -180,24 +186,28 @@ export default function Map() {
   }, []);
 
   useEffect(() => {
-    setUser(new ScatterplotLayer({
-      id: 'user',
-      data: [
-        {
-          lat: location.lat,
-          lng: location.lng,
-        }
-      ],
-      getPosition: (d) => [d.lng, d.lat],
-      getFillColor: [100, 149, 237, 255],
-      getLineColor: [255, 255, 255, 127.5],
-      stroked: true,
-      radiusMinPixels: 10,
-      radiusMaxPixels: 28,
-      lineWidthMinPixels: 6,
-      lineWidthMaxPixels: 13,
-    }))
-  }, [location])
+    if (location.lat !== 37.5665 || location.lng !== 126.978) {
+      setUser(
+        new ScatterplotLayer({
+          id: "user",
+          data: [
+            {
+              lat: location.lat,
+              lng: location.lng,
+            },
+          ],
+          getPosition: (d) => [d.lng, d.lat],
+          getFillColor: [100, 149, 237, 255],
+          getLineColor: [255, 255, 255, 127.5],
+          stroked: true,
+          radiusMinPixels: 10,
+          radiusMaxPixels: 28,
+          lineWidthMinPixels: 6,
+          lineWidthMaxPixels: 13,
+        })
+      );
+    }
+  }, [location]);
 
   useEffect(() => {
     let watchId: number;
@@ -219,7 +229,7 @@ export default function Map() {
         }
       );
     }
-  
+
     // 컴포넌트가 언마운트될 때 watchPosition을 중지
     return () => {
       if (navigator.geolocation && watchId) {
@@ -258,9 +268,9 @@ export default function Map() {
 
   useEffect(() => {
     if (error || data?.errorMessage) {
-      mutate(`/api/data?station=${station}`)
+      mutate(`/api/data?station=${station}`);
     }
-  }, [error, station, data])
+  }, [error, station, data]);
 
   return (
     <>
