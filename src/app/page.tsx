@@ -5,7 +5,7 @@ import {
   Map as GoogleMap,
   // limitTiltRange,
 } from "@vis.gl/react-google-maps";
-import { DeckGL, FlyToInterpolator, MapViewState } from "deck.gl";
+import { DeckGL, FlyToInterpolator, MapViewState, PathLayer, ScatterplotLayer } from "deck.gl";
 import { useLine, useMarker } from "./Hooks";
 import * as color from "@/variable";
 import { ChangeEvent, useCallback, useEffect, useState } from "react";
@@ -22,7 +22,7 @@ export default function Map() {
   const { station, setStation } = useStationStore();
   const { initialViewState, setInitialViewState } = useViewStateStore();
   const { search, setSearch } = useSearchStore();
-  const { data, isLoading } = useSWR<SubwayData>(
+  const { data, isLoading, error } = useSWR<SubwayData>(
     station ? `/api/data?station=${station}` : null,
     fetcher,
     {
@@ -57,9 +57,10 @@ export default function Map() {
     gtxA: true,
   });
   const [location, setLocation] = useState({
-    lat: 37.5665,
-    lng: 126.978,
+    lat: 0.0,
+    lng: 0.0,
   });
+  const [user, setUser] = useState<ScatterplotLayer>();
 
   const _1호선 = useLine(["1호선"], color.line1Color); // ok
   const 장항선 = useLine(["장항선"], color.line1Color);
@@ -179,6 +180,55 @@ export default function Map() {
   }, []);
 
   useEffect(() => {
+    setUser(new ScatterplotLayer({
+      id: 'user',
+      data: [
+        {
+          lat: location.lat,
+          lng: location.lng,
+        }
+      ],
+      getPosition: (d) => [d.lng, d.lat],
+      getFillColor: [100, 149, 237, 255],
+      getLineColor: [255, 255, 255, 127.5],
+      stroked: true,
+      radiusMinPixels: 10,
+      radiusMaxPixels: 28,
+      lineWidthMinPixels: 6,
+      lineWidthMaxPixels: 13,
+    }))
+  }, [location])
+
+  useEffect(() => {
+    let watchId: number;
+    if (navigator.geolocation) {
+      watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          setLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+        },
+        (error) => {
+          console.error("가져오는 중 에러 발생: ", error);
+        },
+        {
+          enableHighAccuracy: true, // 더 정확한 위치 정보 사용
+          timeout: 5000, // 타임아웃 설정
+          maximumAge: 0, // 캐시된 위치 정보 사용 안 함
+        }
+      );
+    }
+  
+    // 컴포넌트가 언마운트될 때 watchPosition을 중지
+    return () => {
+      if (navigator.geolocation && watchId) {
+        navigator.geolocation.clearWatch(watchId);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
         setInitialViewState({
@@ -189,10 +239,6 @@ export default function Map() {
           zoom: 11,
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-        });
-        setLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
         });
       });
     }
@@ -209,6 +255,12 @@ export default function Map() {
       }
     }
   }, [station]);
+
+  useEffect(() => {
+    if (error || data?.errorMessage) {
+      mutate(`/api/data?station=${station}`)
+    }
+  }, [error, station, data])
 
   return (
     <>
@@ -349,6 +401,7 @@ export default function Map() {
       >
         <DeckGL
           layers={[
+            user && user,
             check._1호선 && _1호선,
             check._1호선 && 경인선,
             check._1호선 && 경부선,
@@ -430,7 +483,7 @@ export default function Map() {
                   color.lineColors[object.line][1]
                 }, ${color.lineColors[object.line][2]})`,
                 borderRadius: "30px",
-                boxShadow: "2px 3px 4px lightgray",
+                boxShadow: "2px 3px 4px gray",
                 fontWeight: "bold",
                 padding: "5px 10px",
               },
