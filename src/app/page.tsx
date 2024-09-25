@@ -62,8 +62,8 @@ export default function Map() {
     gtxA: true,
   });
   const [location, setLocation] = useState({
-    lat: 0.0,
-    lng: 0.0,
+    lat: 37.5665,
+    lng: 126.978,
   });
   const [user, setUser] = useState<ScatterplotLayer>();
   const [width, setWidth] = useState(0);
@@ -157,7 +157,7 @@ export default function Map() {
     const viewPort = window.innerWidth;
     if (viewPort < 768) {
       // info!.style.transform = "translateY(384px)";
-      info!.style.bottom = "-550px"
+      info!.style.bottom = "-550px";
     } else {
       info!.style.transform = "translateX(-100%)";
     }
@@ -393,7 +393,7 @@ export default function Map() {
                 !acc.some(
                   (item) =>
                     item.bldn_nm === current.bldn_nm &&
-                    item.route === current.route
+                    item.real === current.real
                 )
               ) {
                 acc.push(current);
@@ -415,7 +415,7 @@ export default function Map() {
                   }}
                   className="font-bold"
                 >
-                  {item.route}
+                  {item.real}
                 </span>
               </div>
             ))}

@@ -63,4 +63,5 @@ export type SubwayDataJson = {
   lot: string;
   bldn_nm: string;
   lat: string;
+  real: string;
 }
