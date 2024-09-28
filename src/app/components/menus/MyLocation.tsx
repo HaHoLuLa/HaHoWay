@@ -1,14 +1,14 @@
 "use client";
 
 import { useViewStateStore } from "@/store";
-import type { Location } from "@/types";
+import type { HandleClose, Location } from "@/types";
 
 export default function MyLocation({
   location,
   handleClose,
 }: {
   location: Location;
-  handleClose: () => void;
+  handleClose: HandleClose;
 }) {
   const { initialViewState, setInitialViewState } = useViewStateStore();
 

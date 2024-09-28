@@ -50,13 +50,10 @@ export type RealtimeArrival = {
   arvlCd: string;
   lstcarAt: string;
 };
-
 export type SubwayData = {
   errorMessage: ErrorMessage;
   realtimeArrivalList: RealtimeArrival[];
 };
-
-
 export type SubwayDataJson = {
   bldn_id: string;
   route: string;
@@ -65,8 +62,8 @@ export type SubwayDataJson = {
   lat: string;
   real: string;
 }
-
 export type Location = {
   lat: number;
   lng: number;
 }
+export type HandleClose = () => void;

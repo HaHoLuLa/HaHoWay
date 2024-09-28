@@ -47,7 +47,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body className={`${namsan.variable} font-namsan`}>{children}</body>
+      <body className={`${namsan.variable} font-namsan select-none`}>{children}</body>
     </html>
   );
 }

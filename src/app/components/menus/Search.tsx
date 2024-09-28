@@ -8,8 +8,8 @@ import * as color from "@/variable";
 
 export default function Search() {
   const { search, setSearch } = useSearchStore();
-  const { initialViewState, setInitialViewState } = useViewStateStore()
-  const { setStation } = useStationStore()
+  const { initialViewState, setInitialViewState } = useViewStateStore();
+  const { setStation } = useStationStore();
 
   const flyToStaion = (station: SubwayDataJson) => {
     setInitialViewState({

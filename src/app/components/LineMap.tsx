@@ -19,7 +19,7 @@ export default function LineMap({
   location: Location;
 }) {
   const { initialViewState } = useViewStateStore();
-  
+
   const [user, setUser] = useState<ScatterplotLayer>();
 
   const applyViewStateConstraints = (viewState: MapViewState): any => ({
