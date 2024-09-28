@@ -6,17 +6,30 @@
 
 ### 사용한 패키지 목록
 
+메인
 - Next
 - React
+
+데이터 페칭
 - Axios
 - SWR
+
+상태관리
 - Zustand
+
+CSS
 - PostCSS
 - TailwindCSS
+
+문법
 - ESLint
 - TypeScript
+
+지도
 - deck.gl
 - vis.gl
+
+기타
 - es-hangul
 
 ### 설치 방법
