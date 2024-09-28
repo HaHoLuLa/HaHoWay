@@ -17,7 +17,7 @@
 - TypeScript
 - deck.gl
 - vis.gl
-- ES-Hangul
+- es-hangul
 
 ### 설치 방법
 

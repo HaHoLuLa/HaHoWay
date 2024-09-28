@@ -9,13 +9,14 @@ import { DeckGL, LayersList, MapViewState, ScatterplotLayer } from "deck.gl";
 import * as color from "@/variable";
 import { useEffect, useState } from "react";
 import { useViewStateStore } from "@/store";
+import type { Location } from "@/types";
 
 export default function LineMap({
   layers,
   location,
 }: {
   layers: LayersList;
-  location: { lat: number; lng: number };
+  location: Location;
 }) {
   const { initialViewState } = useViewStateStore();
   

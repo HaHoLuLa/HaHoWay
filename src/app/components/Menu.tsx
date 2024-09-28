@@ -6,16 +6,17 @@ import axios from "axios";
 import { FlyToInterpolator } from "deck.gl";
 import { useCallback, useEffect, useState } from "react";
 import useSWR, { mutate } from "swr";
-import subway from "../assets/subwayStations.json";
-import { getChoseong } from "es-hangul";
 import * as color from "@/variable";
+import MyLocation from "./menus/MyLocation";
+import Search from "./menus/Search";
+import type { Location } from "@/types";
 
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 export default function Menu({
   location,
 }: {
-  location: { lat: number; lng: number };
+  location: Location;
 }) {
   const { station, setStation } = useStationStore();
   const { initialViewState, setInitialViewState } = useViewStateStore();
@@ -45,17 +46,6 @@ export default function Menu({
     setStation("");
     setSearch("");
   }, [setSearch, setStation]);
-
-  const flyToStaion = (station: SubwayDataJson) => {
-    setInitialViewState({
-      ...initialViewState,
-      zoom: 16,
-      latitude: parseFloat(station.lat),
-      longitude: parseFloat(station.lot),
-    });
-    setStation(station.bldn_nm);
-    setSearch("");
-  };
 
   const startDrag = (e: TouchEvent | MouseEvent) => {
     setIsDrag(true);
@@ -169,72 +159,8 @@ export default function Menu({
   }, [dragMove, station]);
   return (
     <>
-      <div
-        className="fixed z-[5000] bg-white w-10 h-10 rounded-full right-0 bottom-0 mb-3 mr-3 shadow-lg flex items-center justify-center"
-        // title="현위치"
-        onClick={() => {
-          setInitialViewState({
-            ...initialViewState,
-            longitude: location.lng,
-            latitude: location.lat,
-            zoom: 13,
-          });
-          handleClose();
-        }}
-      >
-        <div className="bg-white border-[2px] border-[cornflowerblue] rounded-full w-6 h-6 flex items-center justify-center relative">
-          <div className="bg-[cornflowerblue] rounded-full w-1 h-1"></div>
-        </div>
-      </div>
-      <div className="fixed z-[10000] md:right-0 right-1/2 md:translate-x-0 translate-x-1/2 w-11/12 md:w-1/3 lg:w-1/5 xl:1/6 mt-3 md:mr-3 rounded-[20px] shadow-lg py-2 pl-4 bg-white">
-        <input
-          className="focus:outline-none w-[95%] px-1"
-          placeholder="검색할 역을 입력하세요"
-          onChange={(e) => {
-            setSearch(e.target.value);
-          }}
-          value={search}
-        />
-        <div className="max-h-96 overflow-y-auto pr-4">
-          {subway.DATA.filter(
-            (item) =>
-              search !== "" &&
-              (getChoseong(item.bldn_nm).includes(search) ||
-                item.bldn_nm.includes(search))
-          )
-            .reduce((acc: SubwayDataJson[], current) => {
-              if (
-                !acc.some(
-                  (item) =>
-                    item.bldn_nm === current.bldn_nm &&
-                    item.real === current.real
-                )
-              ) {
-                acc.push(current);
-              }
-              return acc;
-            }, [])
-            .map((item, index) => (
-              <div
-                key={index}
-                className="hover:bg-gray-100 transition-colors ease-in-out duration-300 flex justify-between last:rounded-b-xl p-1"
-                onClick={() => flyToStaion(item)}
-              >
-                <span>{item.bldn_nm}</span>
-                <span
-                  style={{
-                    color: `rgba(${color.lineColors[item.route][0]}, ${
-                      color.lineColors[item.route][1]
-                    }, ${color.lineColors[item.route][2]})`,
-                  }}
-                  className="font-bold"
-                >
-                  {item.real}
-                </span>
-              </div>
-            ))}
-        </div>
-      </div>
+      <MyLocation location={location} handleClose={handleClose} />
+      <Search />
       <div
         id="info"
         className="md:w-[20%] w-full bg-white md:h-screen h-[550px] fixed md:bottom-0 -bottom-[550px] transition-all duration-300 ease-in-out z-[10000] border-t md:left-[-20%] left-0 px-3 pt-2 shadow-lg shadow-gray-300 select-none"

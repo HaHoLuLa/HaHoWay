@@ -65,3 +65,8 @@ export type SubwayDataJson = {
   lat: string;
   real: string;
 }
+
+export type Location = {
+  lat: number;
+  lng: number;
+}
