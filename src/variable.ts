@@ -1,5 +1,8 @@
+// 프로젝트 내에서 쓰일 변수들을 선언
+
 import type { Color } from "@/types"
 
+// 각 노선의 색을 변수에 정의
 export const line1Color: Color = [33, 81, 158, 255]
 export const line2Color: Color = [75, 165, 87, 255]
 export const line3Color: Color = [224, 130, 56, 255]
@@ -24,6 +27,11 @@ export const 김포골드라인Color: Color = [167, 136, 45, 255]
 export const 에버라인선Color: Color = [108, 169, 66, 255]
 export const 의정부경전철Color: Color = [235, 135, 50, 255]
 export const gtxAColor: Color = [146, 101, 143, 255]
+
+/**
+ * 공공 데이터 포털에서 가져오는 데이터 중
+ * 지하철 코드에 따라 선언하였던 색 변수매핑
+ */
 export const subwayColors: Record<string, Color> = {
   "1001": line1Color,
   "1002": line2Color,
@@ -46,6 +54,11 @@ export const subwayColors: Record<string, Color> = {
   "1081": 경강선Color,
   "1032": gtxAColor,
 };
+
+/**
+ * 역사위치정보 JSON에 있는 노선에 따라
+ * 선언하였던 변수를 매핑
+ */
 export const lineColors: Record<string, Color> = {
   "1호선": line1Color,
   "장항선": line1Color,

@@ -1,3 +1,5 @@
+// 편하게 노선도를 그리기 위한 커스텀 훅 정의
+
 "use client"
 import subway from "./assets/subwayStations.json"
 import { LineLayer, ScatterplotLayer } from "deck.gl";

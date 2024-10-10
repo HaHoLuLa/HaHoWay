@@ -1,13 +1,17 @@
+// 모든 페이지들의 루트 레이아웃 페이지 코드
+
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import localFont from "next/font/local";
 
+// 폰트 최적화를 위해 localFont 함수로 폰트 적용
 const namsan = localFont({
   src: "./fonts/SeoulNamsanM.ttf",
   display: "swap",
   variable: "--font-namsan",
 });
 
+// PWA를 위해 테마컬러 적용
 export const viewport: Viewport = {
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#6395ee" },
@@ -15,6 +19,7 @@ export const viewport: Viewport = {
   ],
 };
 
+// 메타 데이터 적용
 export const metadata: Metadata = {
   title: {
     template: "HaHoWay | %s",
@@ -47,6 +52,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      {/* 폰트 적용 */}
       <body className={`${namsan.variable} font-namsan select-none`}>{children}</body>
     </html>
   );
