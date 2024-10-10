@@ -54,7 +54,6 @@ npm install
 NEXT_PUBLIC_MAP_API_KEY=<구글지도_api_키>
 NEXT_PUBLIC_SUBWAY_API_KEY=<서울시_공공데이터포털_키>
 NEXT_PUBLIC_SUBWAY_API_KEY_2=<필요시_하나더_공공데이터포털_키>
-NEXT_PUBLIC_EMAIL=<이메일>
 ```
 
 마지막으로 다음 명령어를 통해 실행한다.
