@@ -22,8 +22,8 @@ export const viewport: Viewport = {
 // 메타 데이터 적용
 export const metadata: Metadata = {
   title: {
-    template: "HaHoWay | %s",
-    default: "HaHoWay",
+    template: "HaHoWay (Test) | %s",
+    default: "HaHoWay (Test)",
   },
   description: "하하호호 즐거운 지하철 탑승!",
   icons: {
@@ -32,8 +32,8 @@ export const metadata: Metadata = {
     apple: "/icon-512.png",
   },
   openGraph: {
-    title: "HaHoWay",
-    siteName: "HaHoWay",
+    title: "HaHoWay (Test)",
+    siteName: "HaHoWay (Test)",
     images: [
       {
         url: "/icon-512.png",
@@ -42,7 +42,7 @@ export const metadata: Metadata = {
       },
     ],
   },
-  applicationName: "HaHoWay",
+  applicationName: "HaHoWay (Test)",
 };
 
 export default function RootLayout({

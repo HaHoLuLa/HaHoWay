@@ -4,8 +4,8 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "HaHoWay",
-    short_name: "HaHoWay",
+    name: "HaHoWay (Test)",
+    short_name: "HaHoWay (Test)",
     description: "하하호호 즐거운 지하철 탑승!",
     start_url: "/",
     display: "standalone",
