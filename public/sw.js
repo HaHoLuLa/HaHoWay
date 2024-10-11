@@ -1,7 +1,3 @@
-// self.addEventListener("install", (e) => {
-//   console.log("Hello World!");
-// })
-
 self.addEventListener("push", function (event) {
   if (event.data) {
     const data = event.data.json();

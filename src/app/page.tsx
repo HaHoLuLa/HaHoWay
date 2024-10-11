@@ -5,7 +5,7 @@ import * as color from "@/variable";
 import { useEffect, useState } from "react";
 import Menu from "./components/Menu";
 import LineMap from "./components/LineMap";
-import { subcribeUser, unsubcribeUser, sendNotification } from "./actions";
+import axios from "axios";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -149,7 +149,7 @@ export default function Map() {
     };
   }, []);
 
-  async function registerServiceWorker() {
+  const registerServiceWorker = async () => {
     const registration = await navigator.serviceWorker.register("/sw.js", {
       scope: "/",
       updateViaCache: "none",
@@ -158,7 +158,7 @@ export default function Map() {
     setSubscription(sub);
   }
 
-  async function subscribeToPush() {
+  const subscribeToPush = async () => {
     const registration = await navigator.serviceWorker.ready;
     const sub = await registration.pushManager.subscribe({
       userVisibleOnly: true,
@@ -167,30 +167,25 @@ export default function Map() {
       ),
     });
     setSubscription(sub);
-    await subcribeUser(sub);
   }
 
-  async function unsubcribeFromPush() {
+  const unsubcribeFromPush = async () => {
     await subscription?.unsubscribe();
     setSubscription(null);
-    await unsubcribeUser();
   }
 
-  async function sendTestNotification() {
+  const sendTestNotification = async () => {
     if (subscription) {
-      await sendNotification(subscription, message);
+      // await sendNotification(subscription, message);
+      await axios.post("/api/push", { subscription, message }).catch((e) => console.error(e))
       setMessage("");
     }
-  }
-
-  if (!isSupported) {
-    return <p>푸쉬알림 지원안함</p>;
   }
 
   return (
     <>
       <div className="bg-white fixed z-[10000]">
-        {subscription ? (
+        {isSupported && subscription ? (
           <>
             <p>구독하여 알림보내기 가능</p>
             <button onClick={unsubcribeFromPush}>구독 취소</button>
