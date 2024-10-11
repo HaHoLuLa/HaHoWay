@@ -1,3 +1,5 @@
+// 에러 시 보여줄 페이지
+
 "use client"
 
 export default function Error({ error }: { error: Error }) {

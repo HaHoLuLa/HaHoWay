@@ -1,3 +1,5 @@
+// SEO 및 PWA를 위한 manifest.json을 자동 생성해주는 코드
+
 import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {

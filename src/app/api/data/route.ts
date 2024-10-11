@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       `http://swopenapi.seoul.go.kr/api/subway/${process.env.NEXT_PUBLIC_SUBWAY_API_KEY}/json/realtimeStationArrival/0/20/${station}`
     );
 
-    if (response.data.code === "ERROR-337")
+    if (process.env.NEXT_PUBLIC_SUBWAY_API_KEY_2 && response.data.code === "ERROR-337")
       response = await axios.get(
         `http://swopenapi.seoul.go.kr/api/subway/${process.env.NEXT_PUBLIC_SUBWAY_API_KEY_2}/json/realtimeStationArrival/0/20/${station}`
       );
