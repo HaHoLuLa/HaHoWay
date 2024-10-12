@@ -1,3 +1,5 @@
+// 지하철 도착 정보를 보는 창메뉴
+
 "use client";
 
 import { useStationStore } from "@/store";
@@ -14,6 +16,8 @@ export default function Info({ handleClose }: { handleClose: HandleClose }) {
   const [isDrag, setIsDrag] = useState(false);
   const [width, setWidth] = useState(0);
   const { station } = useStationStore();
+
+  // 데이터 페칭
   const { data, isLoading, error } = useSWR<SubwayData>(
     station ? `/api/data?station=${station}` : null,
     fetcher,
@@ -22,6 +26,7 @@ export default function Info({ handleClose }: { handleClose: HandleClose }) {
     }
   );
 
+  // 모바일 환경을 위한 메뉴 드래그 구현 함수
   const startDrag = (e: TouchEvent | MouseEvent) => {
     setIsDrag(true);
     if (e instanceof TouchEvent && e.touches) {
@@ -67,6 +72,7 @@ export default function Info({ handleClose }: { handleClose: HandleClose }) {
     setIsDrag(false);
   };
 
+  // 현재 브라우저의 가로폭을 저장
   useEffect(() => {
     setWidth(window.innerWidth);
 
@@ -80,6 +86,7 @@ export default function Info({ handleClose }: { handleClose: HandleClose }) {
     };
   }, []);
 
+  // 역이 선택되었을 시 창 펼침
   useEffect(() => {
     const info = document.getElementById("info");
     const viewPort = window.innerWidth;
@@ -92,12 +99,14 @@ export default function Info({ handleClose }: { handleClose: HandleClose }) {
     }
   }, [station]);
 
+  // 에러 시 다시 데이터 페칭
   useEffect(() => {
     if (error || data?.errorMessage) {
       mutate(`/api/data?station=${station}`);
     }
   }, [error, station, data]);
 
+  // 드래그 함수를 이벤트로 등록
   useEffect(() => {
     const menu = document.getElementById("info");
     if (window.innerWidth < 768 && station) {

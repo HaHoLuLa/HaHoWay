@@ -1,3 +1,5 @@
+// 인덱스 페이지
+
 "use client";
 
 import { useLine, useMarker } from "./Hooks";
@@ -7,11 +9,13 @@ import Menu from "./components/Menu";
 import LineMap from "./components/LineMap";
 
 export default function Map() {
+  // 초기 위치를 상태에 저장
   const [location, setLocation] = useState({
     lat: 37.5665,
     lng: 126.978,
   });
 
+  // 만들었던 커스텀 훅으로 각 노선의 레이어를 변수에 저장
   const _1호선 = useLine(["1호선"], color.line1Color); // ok
   const 장항선 = useLine(["장항선"], color.line1Color);
   const 경부선 = useLine(["경부선"], color.line1Color);
@@ -52,6 +56,7 @@ export default function Map() {
   const 경전철 = useLine(["의정부"], color.의정부경전철Color); // ok
   const gtxA = useLine(["수도권"], color.gtxAColor); // ok
 
+  // 만들었던 커스텀 훅으로 각 노선의 역을 변수에 저장
   const line1 = useMarker(
     ["1호선", "장항선", "경부선", "경인선", "경원선", "광명행", "서동탄행"],
     color.line1Color
@@ -86,6 +91,7 @@ export default function Map() {
   const 경전철역 = useMarker(["의정부"], color.의정부경전철Color);
   const gtxA역 = useMarker(["수도권"], color.gtxAColor);
 
+  // 사용자의 현재 위치를 계속 가져옴
   useEffect(() => {
     console.log(
       ",--.  ,--.        ,--.  ,--.       ,--.   ,--.                 \n|  '--'  | ,--,--.|  '--'  | ,---. |  |   |  | ,--,--.,--. ,--.\n|  .--.  |' ,-.  ||  .--.  || .-. ||  |.'.|  |' ,-.  | \\  '  / \n|  |  |  |\\ '-'  ||  |  |  |' '-' '|   ,'.   |\\ '-'  |  \\   '  \n`--'  `--' `--`--'`--'  `--' `---' '--'   '--' `--`--'.-'  /   \n                                                      `---'    "
@@ -120,8 +126,10 @@ export default function Map() {
 
   return (
     <>
+      {/* 각 컴포넌트에 현위치 상태 전달 */}
       <Menu location={location} />
       <LineMap
+        // 위에서 만들었던 레이어들을 전달
         layers={[
           _1호선,
           경인선,
