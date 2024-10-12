@@ -1,3 +1,5 @@
+// 역 검색을 위한 메뉴
+
 "use client";
 
 import subway from "../../assets/subwayStations.json";
@@ -11,6 +13,7 @@ export default function Search() {
   const { initialViewState, setInitialViewState } = useViewStateStore();
   const { setStation } = useStationStore();
 
+  // 역을 선택 시 해당 역으로 카메라 이동을 위한 함수
   const flyToStaion = (station: SubwayDataJson) => {
     setInitialViewState({
       ...initialViewState,

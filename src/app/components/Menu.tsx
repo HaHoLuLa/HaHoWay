@@ -1,3 +1,5 @@
+// 각 메뉴들을 모은 컴포넌트
+
 "use client";
 
 import { useSearchStore, useStationStore, useViewStateStore } from "@/store";
@@ -13,6 +15,7 @@ export default function Menu({ location }: { location: Location }) {
   const { setInitialViewState } = useViewStateStore();
   const { setSearch } = useSearchStore();
 
+  // Info 메뉴를 닫기 위한 함수
   const handleClose = useCallback(() => {
     const info = document.getElementById("info");
     const viewPort = window.innerWidth;
@@ -26,6 +29,7 @@ export default function Menu({ location }: { location: Location }) {
     setSearch("");
   }, [setSearch, setStation]);
 
+  // 사용자의 현위치를 가져오기 위한 로직
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition((position) => {
@@ -44,6 +48,7 @@ export default function Menu({ location }: { location: Location }) {
 
   return (
     <>
+      {/* 두 컴포넌트에 함수를 전달 */}
       <MyLocation location={location} handleClose={handleClose} />
       <Search />
       <Info handleClose={handleClose} />

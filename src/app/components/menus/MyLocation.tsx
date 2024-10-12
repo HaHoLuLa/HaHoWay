@@ -1,3 +1,5 @@
+// 사용자의 현위치로 카메라를 이동하는 메뉴
+
 "use client";
 
 import { useViewStateStore } from "@/store";
