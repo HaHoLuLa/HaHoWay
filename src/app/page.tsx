@@ -156,7 +156,7 @@ export default function Map() {
     });
     const sub = await registration.pushManager.getSubscription();
     setSubscription(sub);
-  }
+  };
 
   const subscribeToPush = async () => {
     const registration = await navigator.serviceWorker.ready;
@@ -167,20 +167,22 @@ export default function Map() {
       ),
     });
     setSubscription(sub);
-  }
+  };
 
   const unsubcribeFromPush = async () => {
     await subscription?.unsubscribe();
     setSubscription(null);
-  }
+  };
 
   const sendTestNotification = async () => {
     if (subscription) {
       // await sendNotification(subscription, message);
-      await axios.post("/api/push", { subscription, message }).catch((e) => console.error(e))
+      await axios
+        .post("/api/push", { subscription, message })
+        .catch((e) => console.error(e));
       setMessage("");
     }
-  }
+  };
 
   return (
     <>
