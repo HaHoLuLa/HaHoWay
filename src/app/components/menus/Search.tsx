@@ -27,9 +27,9 @@ export default function Search() {
 
   return (
     <>
-      <div className="fixed z-[10000] md:right-0 right-1/2 md:translate-x-0 translate-x-1/2 w-11/12 md:w-1/3 lg:w-1/5 xl:1/6 mt-3 md:mr-3 rounded-[20px] shadow-lg py-2 pl-4 bg-white">
+      <div className="fixed z-10000 md:right-0 right-1/2 md:translate-x-0 translate-x-1/2 w-11/12 md:w-1/3 lg:w-1/5 xl:1/6 mt-3 md:mr-3 rounded-[20px] shadow-lg py-2 pl-4 bg-white">
         <input
-          className="focus:outline-none w-[95%] px-1"
+          className="focus:outline-hidden w-[95%] px-1"
           placeholder="검색할 역을 입력하세요"
           onChange={(e) => {
             setSearch(e.target.value);

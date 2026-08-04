@@ -16,7 +16,7 @@ export default function MyLocation({
 
   return (
     <div
-      className="fixed z-[5000] bg-white w-10 h-10 rounded-full right-0 bottom-0 mb-3 mr-3 shadow-lg flex items-center justify-center"
+      className="fixed z-5000 bg-white w-10 h-10 rounded-full right-0 bottom-0 mb-3 mr-3 shadow-lg flex items-center justify-center"
       // title="현위치"
       onClick={() => {
         setInitialViewState({
@@ -28,7 +28,7 @@ export default function MyLocation({
         handleClose();
       }}
     >
-      <div className="bg-white border-[2px] border-[cornflowerblue] rounded-full w-6 h-6 flex items-center justify-center relative">
+      <div className="bg-white border-2 border-[cornflowerblue] rounded-full w-6 h-6 flex items-center justify-center relative">
         <div className="bg-[cornflowerblue] rounded-full w-1 h-1"></div>
       </div>
     </div>

@@ -131,7 +131,7 @@ export default function Info({ handleClose }: { handleClose: HandleClose }) {
     <>
       <div
         id="info"
-        className="md:w-[20%] w-full bg-white md:h-screen h-[550px] fixed md:bottom-0 -bottom-[550px] transition-all duration-300 ease-in-out z-[10000] border-t md:left-[-20%] left-0 px-3 pt-2 shadow-lg shadow-gray-300"
+        className="md:w-[20%] w-full bg-white md:h-screen h-137.5 fixed md:bottom-0 -bottom-137.5 transition-all duration-300 ease-in-out z-10000 border-t md:left-[-20%] left-0 px-3 pt-2 shadow-lg shadow-gray-300"
       >
         <div className="flex justify-between relative">
           <span className="text-lg pt-1 font-bold">
