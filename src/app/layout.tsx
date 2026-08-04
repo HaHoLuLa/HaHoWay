@@ -52,6 +52,20 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
+      <head>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "HaHoWay",
+              url: "https://hahoway.vercel.app/",
+              alternateName: ["hahoway.vercel.app"],
+            }),
+          }}
+        />
+      </head>
       {/* 폰트 적용 */}
       <body className={`${namsan.variable} font-namsan select-none`}>{children}</body>
     </html>
